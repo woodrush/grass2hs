@@ -49,14 +49,12 @@ prim_succ = return Succ
 prim_out :: IO G
 prim_out = return Out
 
--- main = (g prim_out (g prim_succ (g (g nil prim_w) (g prim_in prim_w))))
-
 
 f0 = prim_in
 f1 = prim_w
 f2 = prim_succ
 f3 = prim_out
 
-f4 = return $ F $ \f4 -> g f3 f1 -- wWWwwwwv
-f5 = return $ F $ \f5 -> g f4 f5 -- wWWw
-main = g f5 f5
+-- f4 = return $ F $ \f4 -> g f3 f1 -- wWWwwwwv
+-- f5 = return $ F $ \f5 -> g f4 f5 -- wWWw
+-- main = g f5 f5
