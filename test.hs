@@ -1,18 +1,23 @@
-import Data.Char (ord)
+import Data.Char (ord, chr)
 
 prim_in :: IO Int
 prim_in = do
     x <- getChar
     return $ ord x
 
-prim_out :: IO Int -> IO ()
+prim_out :: IO Int -> IO Int
 prim_out x = do
     x <- x
-    print x
+    print $ chr x
+    return x
 
 prim_succ :: IO Int -> IO Int
 prim_succ x = do
     x <- x
-    return $ x + 1
+    return $ mod (x + 1) 256
 
-main = prim_out (prim_succ prim_in)
+prim_w :: IO Int
+prim_w = do
+    return $ ord 'w'
+
+main = prim_out $ prim_out $ prim_succ $ prim_succ $ prim_w
