@@ -52,32 +52,34 @@ void emitAbs (int abs_length) {
         printf("return $ F $ \\f%d -> ", stack_depth);
         stack_depth++;
     }
+    printf("do \n");
 }
 
 void emitApp () {
-    const int W_ind = stack_depth - app_W_length + 1;
-    const int w_ind = stack_depth - app_w_length + 1;
-    printf("let f%d = g f%d f%d in ", stack_depth, W_ind, w_ind);
+    const int W_ind = stack_depth - app_W_length;
+    const int w_ind = stack_depth - app_w_length;
+    printf(" let f%d = g f%d f%d\n", stack_depth, W_ind, w_ind);
 }
 
 void emitAppClause () {
+    int initstack = stack_depth;
     while (curchar != EOF && curchar != 'v') {
         readApp();
         emitApp();
         stack_depth++;
     }
+    for (int i = initstack; i < stack_depth; i++) {
+        printf(" f%d\n", i);
+    }
     stack_depth--;
-    printf("f%d\n", stack_depth);
 }
 
-void readFuncDef () {
+void emitFuncDef () {
     int initstack = stack_depth;
     printf("f%d = ", stack_depth);
 
     int abs_length = getLengthOf('w');
-    if (curchar == EOF || curchar == 'v') {
-        emitAbs(abs_length);
-    }
+    emitAbs(abs_length);
     emitAppClause();
     stack_depth = initstack;
 }
@@ -86,7 +88,7 @@ int main (void) {
     for (;;) {
         readChar();
         if (curchar == 'w') {
-            readFuncDef();
+            emitFuncDef();
         } else if (curchar == 'W') {
             int initstack = stack_depth;
             printf("f%d = ", stack_depth);
