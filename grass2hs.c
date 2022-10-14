@@ -52,7 +52,6 @@ void emitAbs (int abs_length) {
         printf("return $ F $ \\f%d -> ", stack_depth);
         stack_depth++;
     }
-    printf("do \n");
 }
 
 void emitApp () {
@@ -64,6 +63,7 @@ void emitApp () {
 }
 
 void emitAppClause () {
+    printf("do \n");
     int initstack = stack_depth;
     while (curchar != EOF && curchar != 'v') {
         readApp();
