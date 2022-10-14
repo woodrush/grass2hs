@@ -4,11 +4,8 @@ import System.IO.Error
 
 data G = Func (G -> G) | Char Int | In | Out | Succ
 
-nil :: G
-nil = Func (\x -> Func (\y -> y))
-
-true :: G
-true = Func (\x -> Func (\y -> x))
+nil = return $ Func $ \x -> Func $ \y -> y
+true = return $ Func $ \x -> Func $ \y -> x
 
 gapply :: IO G -> IO G -> IO G
 gapply x y = do
@@ -22,10 +19,10 @@ gapply x y = do
             case y of
                 Char y' -> do
                     if x' == y' then
-                        return true
+                        true
                     else
-                        return nil
-                otherwise -> return nil
+                        nil
+                otherwise -> nil
         Succ -> do
             y <- y
             case y of
@@ -38,9 +35,10 @@ gapply x y = do
                     print $ chr y'
                     return y
                 otherwise -> error "Non-Char type applied to Out"
-        In -> catch (do
-            c <- getChar
-            return (Char (ord c)))
+        In -> catch
+            (do
+                c <- getChar
+                return (Char (ord c)))
             (\e -> case e of
                 _ | isEOFError e -> y)
 
@@ -56,7 +54,4 @@ prim_succ = return Succ
 prim_in :: IO G
 prim_in = return In
 
-f_nil :: IO G
-f_nil = return nil
-
-main = (gapply prim_out (gapply prim_succ (gapply (gapply f_nil prim_w) (gapply prim_in prim_w))))
+main = (gapply prim_out (gapply prim_succ (gapply (gapply nil prim_w) (gapply prim_in prim_w))))
