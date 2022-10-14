@@ -2,18 +2,17 @@ import Data.Char (ord, chr)
 import Control.Exception
 import System.IO.Error
 
-data G = F (G -> G) | Char Int | In | Out | Succ
+data G = F (IO G -> IO G) | Char Int | In | Out | Succ
 
-true = return $ F $ \x -> F $ \y -> x
-nil = return $ F $ \x -> F $ \y -> y
+true = return $ F $ \x -> return $ F $ \y -> x
+nil = return $ F $ \x -> return $ F $ \y -> y
 
 g :: IO G -> IO G -> IO G
 g x y = do
     x <- x
     case x of
         F x' -> do
-            y <- y
-            return $ x' y
+            x' y
         Char x' -> do
             y <- y
             case y of
@@ -50,10 +49,14 @@ prim_succ = return Succ
 prim_out :: IO G
 prim_out = return Out
 
-main = (g prim_out (g prim_succ (g (g nil prim_w) (g prim_in prim_w))))
+-- main = (g prim_out (g prim_succ (g (g nil prim_w) (g prim_in prim_w))))
 
 
 f0 = prim_in
 f1 = prim_w
 f2 = prim_succ
 f3 = prim_out
+
+f4 = return $ F $ \f4 -> g f3 f1 -- wWWwwwwv
+f5 = return $ F $ \f5 -> g f4 f5 -- wWWw
+main = g f5 f5
