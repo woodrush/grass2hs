@@ -57,8 +57,8 @@ void emitAbs (int abs_length) {
 void emitApp () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
-    printf(" f%d <- return $ return f%d\n", stack_depth, stack_depth);
+    printf(" f%d_ <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+    printf(" let f%d = return f%d_\n", stack_depth, stack_depth);
     printf(" f%d :: IO G\n", stack_depth);
 }
 
@@ -75,7 +75,6 @@ void emitAppClause () {
 }
 
 void emitDefHeader () {
-    printf("f%d :: IO G\n", stack_depth);
     printf("f%d = ", stack_depth);
 }
 
