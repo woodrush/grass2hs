@@ -58,7 +58,8 @@ void emitAbs (int abs_length) {
 void emitApp () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf(" let f%d = g f%d f%d\n", stack_depth, W_ind, w_ind);
+    printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+    printf(" f%d <- return $ return f%d\n", stack_depth, stack_depth);
 }
 
 void emitAppClause () {
