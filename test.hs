@@ -1,23 +1,35 @@
 import Data.Char (ord, chr)
 
-prim_in :: IO Int
-prim_in = do
-    x <- getChar
-    return $ ord x
+nil a b = b
 
-prim_out :: IO Int -> IO Int
-prim_out x = do
-    x <- x
-    print $ chr x
-    return x
+data G a = Func a | W a
 
-prim_succ :: IO Int -> IO Int
-prim_succ x = do
-    x <- x
-    return $ mod (x + 1) 256
+-- prim_in :: IO Int
+-- prim_in = do
+--     x <- getChar
+--     return $ ord x
+
+prim_out :: G (IO Int) -> IO Int
+prim_out x = case x of
+    W z -> do
+            c <- z
+            -- let c = 65
+            print $ chr c
+            return c
+    otherwise -> return 0
+
+-- prim_succ :: IO Int -> IO Int
+-- prim_succ x = do
+--     x <- x
+--     return $ mod (x + 1) 256
 
 prim_w :: IO Int
-prim_w = do
-    return $ ord 'w'
+prim_w = return $ ord 'w'
+-- case a of
+--     W t -> return $ ord 'w'
+--     otherwise -> return 0
+    
 
-main = prim_out $ prim_out $ prim_succ $ prim_succ $ prim_w
+w = W prim_w
+
+main = prim_out $ w
