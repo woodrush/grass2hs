@@ -12,20 +12,16 @@ data G a = Func a | Char a
 -- prim_out :: IO (G (t1 -> Int)) -> IO (G (t2 -> Int))
 prim_out x = case x of
     Char x' -> do
-        print $ chr (x' prim_w)
+        print $ chr x'
         return 0
     otherwise -> return 0
 
 
 -- prim_succ :: G t -> IO Int
--- prim_succ x = case x of
---     W z -> do
---         x <- z w
---         \a -> do return $ mod (x + 1) 256
---     otherwise -> return 0
+prim_succ (Char x) = Char (mod (x + 1) 256)
 
 -- prim_w :: (G a -> G b) -> G c
-prim_w = Char (\x -> ord 'w')
+prim_w = Char (ord 'w')
 
 
-main = prim_out prim_w
+main = prim_out (prim_succ prim_w)
