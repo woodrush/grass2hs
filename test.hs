@@ -26,11 +26,9 @@ prim_succ x = do
         (Char x') -> return (Char (mod (x' + 1) 256))
         otherwise -> return (Char 0)
 
--- prim_w :: (G a -> G b) -> G c
+prim_w :: IO (G Int)
+prim_w = return (Char (ord 'w'))
 
--- prim_w = return (Char (ord 'w'))
-
-
-main = prim_out (prim_succ prim_in)
+main = prim_out (prim_succ (nil prim_w prim_in))
 
 --(prim_succ prim_in)
