@@ -73,8 +73,20 @@ void emitAppClause () {
     printf(" f%d\n", stack_depth);
 }
 
+
 void emitDefHeader () {
     printf("f%d = ", stack_depth);
+}
+void emitAppDef () {
+    while (curchar != EOF && curchar != 'v') {
+        emitDefHeader();
+        printf("do \n");
+        readApp();
+        emitApp();
+        printf(" f%d\n", stack_depth);
+        stack_depth++;
+    }
+    stack_depth--;
 }
 
 void emitFuncDef () {
@@ -93,10 +105,7 @@ int main (void) {
         if (curchar == 'w') {
             emitFuncDef();
         } else if (curchar == 'W') {
-            int initstack = stack_depth;
-            emitDefHeader();
-            emitAppClause();
-            stack_depth = initstack;
+            emitAppDef();
         } else if (curchar == EOF) {
             break;
         }
