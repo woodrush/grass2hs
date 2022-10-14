@@ -60,4 +60,4 @@ prim_in = return In
 f_nil :: IO (G)
 f_nil = return nil
 
-main = (gapply prim_out (gapply (gapply f_nil prim_w) prim_w))
+main = (gapply prim_out (gapply prim_succ (gapply (gapply f_nil prim_w) (gapply prim_in prim_w))))
