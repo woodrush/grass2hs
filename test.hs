@@ -4,6 +4,7 @@ nil a b = b
 
 data G a = Func a | Char a | ExtractChar
 
+
 -- -- prim_in :: IO (Char Int)
 -- prim_in = do
 --    x <- getChar
@@ -17,19 +18,25 @@ prim_out x = do
         (Char x') -> do
             let x = x' ExtractChar
             print $ chr x
-        otherwise -> return ()
+            return $ prim_char x
+        otherwise -> return $ prim_char 0
 
 
 -- -- prim_succ :: G t -> IO Int
--- prim_succ x = do
---     x <- x
---     case x of
---         (Char x') -> return (Char (mod (x' + 1) 256))
---         otherwise -> return (Char 0)
+prim_succ x = do
+    x <- x
+    case x of
+        (Char x') -> do
+            let x = x' ExtractChar
+            return $ prim_char (mod (x + 1) 256)
+        otherwise -> return $ prim_char 0
 
--- prim_w :: IO (G Int)
-prim_w = return (Char (\x -> case x of
-    ExtractChar -> (ord 'w')
-    otherwise -> 0))
+-- prim_w :: IO (G Int) 
 
-main = prim_out prim_w
+prim_char c = Char (\x -> case x of
+    ExtractChar -> c
+    otherwise -> 0)
+
+prim_w = return (prim_char (ord 'w'))
+
+main = prim_out $ prim_succ prim_w
