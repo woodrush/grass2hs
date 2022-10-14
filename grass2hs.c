@@ -75,9 +75,14 @@ void emitAppClause () {
     printf(" f%d\n", stack_depth);
 }
 
+void emitDefHeader () {
+    printf("f%d :: IO G\n", stack_depth);
+    printf("f%d = ", stack_depth);
+}
+
 void emitFuncDef () {
     int initstack = stack_depth;
-    printf("f%d = ", stack_depth);
+    emitDefHeader();
 
     int abs_length = getLengthOf('w');
     emitAbs(abs_length);
@@ -92,7 +97,7 @@ int main (void) {
             emitFuncDef();
         } else if (curchar == 'W') {
             int initstack = stack_depth;
-            printf("f%d = ", stack_depth);
+            emitDefHeader();
             emitAppClause();
             stack_depth = initstack;
         } else if (curchar == EOF) {
