@@ -31,11 +31,22 @@ gapply x y = do
                 Char y' -> do
                     print $ chr y'
                     return y
-                otherwise -> error "Non-Char type applied to Out" 
+                otherwise -> error "Non-Char type applied to Out"
+        In -> do
+            c <- getChar
+            return $ Char (ord c)
         otherwise -> return nil
 
+prim_w :: IO (G _)
 prim_w = return (Char (ord 'w'))
+
+prim_out :: IO (G _)
 prim_out = return Out
+
+prim_succ :: IO (G _)
 prim_succ = return Succ
 
-main = gapply prim_out (gapply prim_succ prim_w)
+prim_in :: IO (G _)
+prim_in = return In
+
+main = gapply prim_out (gapply prim_succ (gapply prim_in prim_w))
