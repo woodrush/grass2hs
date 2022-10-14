@@ -8,8 +8,11 @@ data G = F (IO G -> IO G) | Char Int | In | Out | Succ
 ret :: G -> IO G
 ret x = return x
 
-true = ret $ F $ \x -> ret $ F $ \y -> (x :: IO G)
-nil = ret $ F $ \x -> ret $ F $ \y -> (y :: IO G)
+f :: (IO G -> IO G) -> IO G
+f x = ret $ F x
+
+true = f $ \x -> f $ \y -> x
+nil = f $ \x -> f $ \y -> y
 
 
 g :: IO G -> IO G -> IO G
