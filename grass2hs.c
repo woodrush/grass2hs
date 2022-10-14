@@ -68,10 +68,11 @@ void emitAppClause () {
         emitApp();
         stack_depth++;
     }
-    for (int i = initstack; i < stack_depth; i++) {
+    for (int i = initstack; i < stack_depth - 1; i++) {
         printf(" f%d\n", i);
     }
     stack_depth--;
+    printf(" f%d\n", stack_depth);
 }
 
 void emitFuncDef () {
