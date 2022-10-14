@@ -9,10 +9,10 @@ data G a = Func a | Char Int
 --     x <- getChar
 --     return $ ord x
 
-prim_out :: Int -> IO Int
+prim_out :: Int -> IO (t -> Int)
 prim_out x = do
     print $ chr x
-    return x
+    return (\a -> x)
 
 
 -- prim_succ :: G t -> IO Int
