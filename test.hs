@@ -1,17 +1,16 @@
-{-# LANGUAGE PartialTypeSignatures #-}
 import Data.Char (ord, chr)
-
--- data Lam = Fn (Lam -> Lam)
+import Control.Exception
+import System.IO.Error
 
 data G = Func (G -> G) | Char Int | In | Out | Succ
 
--- nil :: IO (G)
+nil :: G
 nil = Func (\x -> Func (\y -> y))
 
--- true :: IO (G)
+true :: G
 true = Func (\x -> Func (\y -> x))
 
-gapply :: IO (G) -> IO (G) -> IO (G)
+gapply :: IO G -> IO G -> IO G
 gapply x y = do
     x <- x
     case x of
@@ -23,9 +22,9 @@ gapply x y = do
             case y of
                 Char y' -> do
                     if x' == y' then
-                        return nil
-                    else
                         return true
+                    else
+                        return nil
                 otherwise -> return nil
         Succ -> do
             y <- y
@@ -39,25 +38,25 @@ gapply x y = do
                     print $ chr y'
                     return y
                 otherwise -> error "Non-Char type applied to Out"
-        In -> do
+        In -> catch (do
             c <- getChar
-            return (Char (ord c))
+            return (Char (ord c)))
+            (\e -> case e of
+                _ | isEOFError e -> y)
 
-prim_w :: IO (G)
+prim_w :: IO G
 prim_w = return (Char (ord 'w'))
 
-prim_out :: IO (G)
+prim_out :: IO G
 prim_out = return Out
 
-prim_succ :: IO (G)
+prim_succ :: IO G
 prim_succ = return Succ
 
-prim_in :: IO (G)
+prim_in :: IO G
 prim_in = return In
 
--- main = gapply prim_out (gapply prim_succ (gapply prim_in prim_w))
--- main = gapply prim_out (gapply (gapply nil prim_w) prim_w)
-f_nil :: IO (G)
+f_nil :: IO G
 f_nil = return nil
 
 main = (gapply prim_out (gapply prim_succ (gapply (gapply f_nil prim_w) (gapply prim_in prim_w))))
