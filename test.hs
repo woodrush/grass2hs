@@ -4,10 +4,11 @@ nil a b = b
 
 data G a = Func a | Char a
 
--- prim_in :: IO Int
+-- prim_in :: IO (Char Int)
 prim_in = do
-    x <- getChar
-    return $ Char (ord x)
+   x <- getChar
+   return (Char (ord x))
+ 
 
 -- prim_out :: IO (G (t1 -> Int)) -> IO (G (t2 -> Int))
 prim_out x = do
@@ -26,9 +27,10 @@ prim_succ x = do
         otherwise -> return (Char 0)
 
 -- prim_w :: (G a -> G b) -> G c
-prim_w = return (Char (ord 'w'))
+
+-- prim_w = return (Char (ord 'w'))
 
 
-main = prim_out (prim_succ prim_w)
+main = prim_out (prim_succ prim_in)
 
 --(prim_succ prim_in)
