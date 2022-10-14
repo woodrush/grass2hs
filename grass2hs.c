@@ -60,6 +60,7 @@ void emitApp () {
     const int w_ind = stack_depth - app_w_length;
     printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
     printf(" f%d <- return $ return f%d\n", stack_depth, stack_depth);
+    printf(" f%d :: IO G\n", stack_depth);
 }
 
 void emitAppClause () {
@@ -68,9 +69,6 @@ void emitAppClause () {
         readApp();
         emitApp();
         stack_depth++;
-    }
-    for (int i = initstack; i < stack_depth - 1; i++) {
-        printf(" f%d\n", i);
     }
     stack_depth--;
     printf(" f%d\n", stack_depth);
