@@ -11,33 +11,30 @@ nil = return $ F $ \x -> return $ F $ \y -> y
 g :: IO G -> IO G -> IO G
 g x y = do
     x <- x
+    y <- y
     case x of
+        F x' -> x' $ return y
+        Char x' -> do
+            case y of
+                Char y' -> if x' == y' then true else nil
+                otherwise -> nil
+        Succ -> do
+            case y of
+                Char y' -> return $ Char $ mod (y' + 1) 256
+                otherwise -> error "Non-Char type applied to Succ"
+        Out -> do
+            case y of
+                Char y' -> do
+                    putChar $ chr y'
+                    hFlush stdout
+                    return y
+                otherwise -> error "Non-Char type applied to Out"
         In -> catch
             (do
                 c <- getChar
                 return $ Char $ ord c)
             (\e -> case e of
-                _ | isEOFError e -> y)
-        F x' -> do
-            x' y
-        otherwise -> do
-            y <- y
-            case x of
-                Char x' -> do
-                    case y of
-                        Char y' -> do if x' == y' then true else nil
-                        otherwise -> nil
-                Succ -> do
-                    case y of
-                        Char y' -> return $ Char $ mod (y' + 1) 256
-                        otherwise -> error "Non-Char type applied to Succ" 
-                Out -> do
-                    case y of
-                        Char y' -> do
-                            putChar $ chr y'
-                            hFlush stdout
-                            return y
-                        otherwise -> error "Non-Char type applied to Out"
+                _ | isEOFError e -> return y)
 
 prim_in :: IO G
 prim_in = return In
