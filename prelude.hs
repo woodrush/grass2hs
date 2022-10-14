@@ -5,48 +5,52 @@ import System.IO
 
 data G = F (IO G -> IO G) | Char Int | In | Out | Succ
 
-true = return $ F $ \x -> return $ F $ \y -> x
-nil = return $ F $ \x -> return $ F $ \y -> y
+ret :: G -> IO G
+ret x = return x
+
+true = ret $ F $ \x -> ret $ F $ \y -> (x :: IO G)
+nil = ret $ F $ \x -> ret $ F $ \y -> (y :: IO G)
+
 
 g :: IO G -> IO G -> IO G
 g x y = do
     x <- x
     y <- y
     case x of
-        F x' -> x' $ return y
+        F x' -> x' $ ret y
         Char x' -> do
             case y of
                 Char y' -> if x' == y' then true else nil
                 otherwise -> nil
         Succ -> do
             case y of
-                Char y' -> return $ Char $ mod (y' + 1) 256
+                Char y' -> ret $ Char $ mod (y' + 1) 256
                 otherwise -> error "Non-Char type applied to Succ"
         Out -> do
             case y of
                 Char y' -> do
                     putChar $ chr y'
                     hFlush stdout
-                    return y
+                    ret y
                 otherwise -> error "Non-Char type applied to Out"
         In -> catch
             (do
                 c <- getChar
-                return $ Char $ ord c)
+                ret $ Char $ ord c)
             (\e -> case e of
-                _ | isEOFError e -> return y)
+                _ | isEOFError e -> ret y)
 
 prim_in :: IO G
-prim_in = return In
+prim_in = ret In
 
 prim_w :: IO G
-prim_w = return (Char (ord 'w'))
+prim_w = ret (Char (ord 'w'))
 
 prim_succ :: IO G
-prim_succ = return Succ
+prim_succ = ret Succ
 
 prim_out :: IO G
-prim_out = return Out
+prim_out = ret Out
 
 f0 = prim_in
 f1 = prim_w
