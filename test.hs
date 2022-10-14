@@ -2,26 +2,22 @@ import Data.Char (ord, chr)
 import Control.Exception
 import System.IO.Error
 
-data G = Func (G -> G) | Char Int | In | Out | Succ
+data G = F (G -> G) | Char Int | In | Out | Succ
 
-nil = return $ Func $ \x -> Func $ \y -> y
-true = return $ Func $ \x -> Func $ \y -> x
+true = return $ F $ \x -> F $ \y -> x
+nil = return $ F $ \x -> F $ \y -> y
 
 gapply :: IO G -> IO G -> IO G
 gapply x y = do
     x <- x
     case x of
-        Func x' -> do
+        F x' -> do
             y <- y
             return (x' y)
         Char x' -> do
             y <- y
             case y of
-                Char y' -> do
-                    if x' == y' then
-                        true
-                    else
-                        nil
+                Char y' -> do if x' == y' then true else nil
                 otherwise -> nil
         Succ -> do
             y <- y
