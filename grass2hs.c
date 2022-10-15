@@ -74,7 +74,7 @@ void emitAppClause () {
     if (curchar == EOF || curchar == 'v') {
         printf("ret f%d\n", stack_depth - 1);
     } else {
-        printf("do \n");
+        printf("do\n");
         int initstack = stack_depth;
         while (curchar != EOF && curchar != 'v') {
             readApp();
