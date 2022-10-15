@@ -67,7 +67,7 @@ void emitApp () {
 void emitApp_Appdef () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf("App f%d f%d\n", W_ind, w_ind);
+    printf("Value $ g f%d f%d\n", W_ind, w_ind);
 }
 
 void emitAppClause () {
