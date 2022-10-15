@@ -3,7 +3,7 @@ import Control.Exception
 import System.IO.Error
 import System.IO
 
-data G = F (G -> IO G) | Value (IO G) | Char Int
+data G = F (G -> IO G) | App G G | Char Int
 
 ret :: G -> IO G
 ret = return
@@ -16,11 +16,11 @@ nil = F $ \x -> f $ \y -> ret y
 
 g :: G -> G -> IO G
 g x y = case (x, y) of
-    (Value x', _)      -> do
-                            x <- x'
+    (App x1 x2, _)     -> do
+                            x <- g x1 x2
                             g x y
-    (_, Value y')      -> do
-                            y <- y'
+    (_, App y1 y2)     -> do
+                            y <- g y1 y2
                             g x y
     (F x', _)          -> x' y
     (Char x', Char y') -> ret $ if x' == y' then true else nil
