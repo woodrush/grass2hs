@@ -61,6 +61,12 @@ void emitApp () {
     printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
 }
 
+void emitApp_Appdef () {
+    const int W_ind = stack_depth - app_W_length;
+    const int w_ind = stack_depth - app_w_length;
+    printf("g f%d f%d\n", W_ind, w_ind);
+}
+
 void emitAppClause () {
     printf("do \n");
     int initstack = stack_depth;
@@ -80,10 +86,8 @@ void emitDefHeader () {
 void emitAppDef () {
     while (curchar != EOF && curchar != 'v') {
         emitDefHeader();
-        printf("do \n");
         readApp();
-        emitApp();
-        printf(" f%d\n", stack_depth);
+        emitApp_Appdef();
         stack_depth++;
     }
     stack_depth--;
