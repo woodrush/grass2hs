@@ -57,8 +57,15 @@ void emitAbs (int abs_length) {
 void emitApp () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf(" f%d_ <- g f%d f%d\n", stack_depth, W_ind, w_ind);
-    printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
+    printf(" let f%d = g f%d f%d\n f%d\n", stack_depth, W_ind, w_ind, stack_depth);
+    // printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
+}
+
+void emitApp_appdef () {
+    const int W_ind = stack_depth - app_W_length;
+    const int w_ind = stack_depth - app_w_length;
+    printf(" do\n x <- g f%d f%d\n ret x\n", W_ind, w_ind);
+    // printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
 }
 
 void emitAppClause () {
@@ -70,7 +77,7 @@ void emitAppClause () {
         stack_depth++;
     }
     stack_depth--;
-    printf(" f%d\n", stack_depth);
+    // printf(" f%d\n", stack_depth);
 }
 
 
@@ -80,10 +87,10 @@ void emitDefHeader () {
 void emitAppDef () {
     while (curchar != EOF && curchar != 'v') {
         emitDefHeader();
-        printf("do \n");
+        // printf("do \n");
         readApp();
-        emitApp();
-        printf(" f%d\n", stack_depth);
+        emitApp_appdef();
+        // printf(" f%d\n", stack_depth);
         stack_depth++;
     }
     stack_depth--;
@@ -95,7 +102,11 @@ void emitFuncDef () {
 
     int abs_length = getLengthOf('w');
     emitAbs(abs_length);
-    emitAppClause();
+    if (curchar == 'v' || curchar == EOF) {
+        printf("do\n x <- f%d\n ret x\n", stack_depth);
+    } else {
+        emitAppClause();
+    }
     stack_depth = initstack;
 }
 
