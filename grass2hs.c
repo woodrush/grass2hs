@@ -60,7 +60,7 @@ void emitApp () {
     if (curchar == EOF || curchar == 'v') {
         printf(" g f%d f%d\n", W_ind, w_ind);
     } else {
-        printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+        printf(" ubind (uc (uc (g f%d) f%d)) $ \\f%d ->", W_ind, w_ind, stack_depth);
     }
 }
 

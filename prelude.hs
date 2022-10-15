@@ -2,6 +2,7 @@ import Data.Char (ord, chr)
 import Control.Exception
 import System.IO.Error
 import System.IO
+import Unsafe.Coerce
 
 data G = F (G -> IO G) | App G G | Char Int | In | Out | Succ
 
@@ -13,6 +14,11 @@ f x = ret $ F x
 
 true = F $ \x -> f $ \y -> ret x
 nil = F $ \x -> f $ \y -> ret y
+
+uc = unsafeCoerce
+
+ubind :: IO G -> (G -> IO G) -> IO G
+ubind a b = uc $ (>>=) a b
 
 g :: G -> G -> IO G
 g x y = case (x, y) of
