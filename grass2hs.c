@@ -57,7 +57,11 @@ void emitAbs (int abs_length) {
 void emitApp () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+    if (curchar == EOF || curchar == 'v') {
+        printf(" g f%d f%d\n", W_ind, w_ind);
+    } else {
+        printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+    }
 }
 
 void emitApp_Appdef () {
@@ -67,15 +71,18 @@ void emitApp_Appdef () {
 }
 
 void emitAppClause () {
-    printf("do \n");
-    int initstack = stack_depth;
-    while (curchar != EOF && curchar != 'v') {
-        readApp();
-        emitApp();
-        stack_depth++;
+    if (curchar == EOF || curchar == 'v') {
+        printf("ret f%d\n", stack_depth - 1);
+    } else {
+        printf("do \n");
+        int initstack = stack_depth;
+        while (curchar != EOF && curchar != 'v') {
+            readApp();
+            emitApp();
+            stack_depth++;
+        }
+        stack_depth--;
     }
-    stack_depth--;
-    printf(" ret f%d\n", stack_depth);
 }
 
 
