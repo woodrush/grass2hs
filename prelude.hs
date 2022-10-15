@@ -19,24 +19,18 @@ g :: IO G -> IO G -> IO G
 g x y = do
     x <- x
     y <- y
-    case x of
-        F x' -> x' $ ret y
-        Char x' -> do
-            case y of
-                Char y' -> if x' == y' then true else nil
-                otherwise -> nil
-        Succ -> do
-            case y of
-                Char y' -> ret $ Char $ mod (y' + 1) 256
-                otherwise -> error "Non-Char type applied to Succ"
-        Out -> do
-            case y of
-                Char y' -> do
+    case (x, y) of
+        (F x', _) -> x' $ ret y
+        (Char x', Char y') -> if x' == y' then true else nil
+        (Char x', _) -> nil
+        (Succ, Char y') -> ret $ Char $ mod (y' + 1) 256
+        (Succ, _) -> error "Non-Char type applied to Succ"
+        (Out, Char y') -> do
                     putChar $ chr y'
                     hFlush stdout
                     ret y
-                otherwise -> error "Non-Char type applied to Out"
-        In -> catch
+        (Out, _) -> error "Non-Char type applied to Out"
+        (In, _) -> catch
             (do
                 c <- getChar
                 ret $ Char $ ord c)
