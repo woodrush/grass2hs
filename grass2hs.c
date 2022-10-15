@@ -49,7 +49,7 @@ void readApp () {
 
 void emitAbs (int abs_length) {
     for (int i = 0; i < abs_length; i++) {
-        printf("f $ \\f%d -> ", stack_depth);
+        printf("%s $ \\f%d -> ", i == 0 ? "F" : "f", stack_depth);
         stack_depth++;
     }
 }
@@ -57,8 +57,8 @@ void emitAbs (int abs_length) {
 void emitApp () {
     const int W_ind = stack_depth - app_W_length;
     const int w_ind = stack_depth - app_w_length;
-    printf(" f%d_ <- g f%d f%d\n", stack_depth, W_ind, w_ind);
-    printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
+    printf(" f%d <- g f%d f%d\n", stack_depth, W_ind, w_ind);
+    // printf(" let f%d = ret f%d_\n", stack_depth, stack_depth);
 }
 
 void emitApp_Appdef () {
@@ -76,7 +76,7 @@ void emitAppClause () {
         stack_depth++;
     }
     stack_depth--;
-    printf(" f%d\n", stack_depth);
+    printf(" ret f%d\n", stack_depth);
 }
 
 
