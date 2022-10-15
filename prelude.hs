@@ -11,9 +11,8 @@ ret x = return x
 f :: (G -> IO G) -> IO G
 f x = ret $ F x
 
-true = f $ \x -> f $ \y -> ret x
-nil = f $ \x -> f $ \y -> ret y
-
+true = F $ \x -> f $ \y -> ret x
+nil = F $ \x -> f $ \y -> ret y
 
 g :: G -> G -> IO G
 g x y = do
@@ -21,12 +20,12 @@ g x y = do
         (App x', _)        -> do
                                 x <- x'
                                 g x y
-        (_, App y')         -> do
+        (_, App y')        -> do
                                 y <- y'
                                 g x y
         (F x', _)          -> x' y
-        (Char x', Char y') -> if x' == y' then true else nil
-        (Char x', _)       -> nil
+        (Char x', Char y') -> ret $ if x' == y' then true else nil
+        (Char x', _)       -> ret nil
         (Succ, Char y')    -> ret $ Char $ mod (y' + 1) 256
         (Succ, _)          -> error "Non-Char type applied to Succ"
         (Out, Char y')     -> do
@@ -41,19 +40,7 @@ g x y = do
                                 (\e -> case e of
                                     _ | isEOFError e -> ret y)
 
--- prim_in :: IO G
-prim_in = In
-
--- prim_w :: IO G
-prim_w = (Char (ord 'w'))
-
--- prim_succ :: IO G
-prim_succ = Succ
-
--- prim_out :: IO G
-prim_out = Out
-
-f0 = prim_in
-f1 = prim_w
-f2 = prim_succ
-f3 = prim_out
+f0 = In
+f1 = Char $ ord 'w'
+f2 = Succ
+f3 = Out
