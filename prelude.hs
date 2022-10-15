@@ -3,7 +3,7 @@ import Control.Exception
 import System.IO.Error
 import System.IO
 
-data G = F (G -> IO G) | Value (IO G) | Char Int | In | Out | Succ
+data G = F (G -> IO G) | Value (IO G) | Char Int
 
 ret :: G -> IO G
 ret = return
@@ -25,21 +25,26 @@ g x y = case (x, y) of
     (F x', _)          -> x' y
     (Char x', Char y') -> ret $ if x' == y' then true else nil
     (Char x', _)       -> ret nil
-    (Succ, Char y')    -> ret $ Char $ mod (y' + 1) 256
-    (Succ, _)          -> error "Non-Char type applied to Succ"
-    (Out, Char y')     -> do
-                            putChar $ chr y'
-                            hFlush stdout
-                            ret y
-    (Out, _)           -> error "Non-Char type applied to Out"
-    (In, _)            -> catch
-                            (do
-                                c <- getChar
-                                ret $ Char $ ord c)
-                            (\e -> case e of
-                                _ | isEOFError e -> ret y)
 
-f0 = In
+prim_in y = catch
+    (do
+        c <- getChar
+        ret $ Char $ ord c)
+    (\e -> case e of
+        _ | isEOFError e -> ret y)
+
+prim_succ y = case y of
+    Char y'   -> ret $ Char $ mod (y' + 1) 256
+    otherwise -> error "Non-Char type applied to Succ"
+
+prim_out y = case y of
+    Char y'   -> do
+                    putChar $ chr y'
+                    hFlush stdout
+                    ret y
+    otherwise -> error "Non-Char type applied to Out"
+
+f0 = F prim_in
 f1 = Char $ ord 'w'
-f2 = Succ
-f3 = Out
+f2 = F prim_succ
+f3 = F prim_out
